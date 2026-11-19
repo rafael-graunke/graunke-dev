@@ -1,0 +1,29 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "@lib/utils";
+
+type Props = { post: CollectionEntry<"posts"> };
+const { post } = Astro.props;
+const { title, date, summary, tags } = post.data;
+---
+
+<article class="group relative grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
+  <time datetime={date.toISOString()} class="font-mono text-xs text-zinc-500 sm:pt-1">
+    {formatDate(date)}
+  </time>
+  <div class="space-y-1.5">
+    <h3 class="font-medium text-zinc-900 group-hover:text-accent-700 dark:text-zinc-100 dark:group-hover:text-accent-300">
+      <a href={`/writing/${post.id}`} class="after:absolute after:inset-0">{title}</a>
+    </h3>
+    <p class="text-sm text-zinc-600 dark:text-zinc-400">{summary}</p>
+    {
+      tags.length > 0 && (
+        <ul class="flex flex-wrap gap-1.5 pt-0.5" aria-label="Tags">
+          {tags.map((t) => (
+            <li class="tag">{t}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</article>

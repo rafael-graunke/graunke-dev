@@ -1,0 +1,73 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import StatusBadge from "@components/StatusBadge.astro";
+import ProjectLinks from "@components/ProjectLinks.astro";
+import PostItem from "@components/PostItem.astro";
+import Mermaid from "@components/Mermaid.astro";
+import { getPosts, getProjects, projectSlug } from "@lib/utils";
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: projectSlug(project) },
+    props: { project },
+  }));
+}
+
+type Props = { project: CollectionEntry<"projects"> };
+const { project } = Astro.props;
+const { title, summary, status, stack, links, cover } = project.data;
+const slug = projectSlug(project);
+const { Content } = await render(project);
+const related = (await getPosts()).filter((p) => p.data.related_project === slug);
+---
+
+<PageLayout title={title} description={summary} image={`/og/projects/${slug}.png`} type="article">
+  <Container class="space-y-10">
+    <a href="/projects" class="link inline-block text-sm text-zinc-500">← All projects</a>
+
+    <header class="space-y-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-white">{title}</h1>
+        <StatusBadge status={status} />
+      </div>
+      <p class="max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">{summary}</p>
+      {
+        stack.length > 0 && (
+          <ul class="flex flex-wrap gap-1.5" aria-label="Stack">
+            {stack.map((s) => (
+              <li class="tag">{s}</li>
+            ))}
+          </ul>
+        )
+      }
+      <ProjectLinks links={links} />
+    </header>
+
+    {cover && <img src={cover} alt={`${title} screenshot`} class="w-full rounded-lg border border-zinc-200 dark:border-zinc-800" />}
+
+    <article class="prose-content">
+      <Content />
+      <h2 id="links">Links</h2>
+    </article>
+    <ProjectLinks links={links} />
+
+    {
+      related.length > 0 && (
+        <section aria-labelledby="related-title" class="space-y-2 border-t border-zinc-200 pt-8 dark:border-zinc-800">
+          <h2 id="related-title" class="section-title">Writing about {title}</h2>
+          <ul class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {related.map((post) => (
+              <li>
+                <PostItem post={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </Container>
+  <Mermaid />
+</PageLayout>

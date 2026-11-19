@@ -1,73 +1,151 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-html {
-  overflow-y: scroll;
-  color-scheme: light;
+/* Theme is driven by the `dark` class on <html> (dark by default, see Head.astro). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Single restrained accent: muted amber. */
+  --color-accent-300: #f2c98a;
+  --color-accent-400: #e8b062;
+  --color-accent-500: #d4943a;
+  --color-accent-600: #b0762a;
+  --color-accent-700: #8a5b22;
 }
 
-html.dark {
-  color-scheme: dark;
-}
-
-html,
-body {
-  @apply size-full;
-}
-
-body {
-  @apply font-sans antialiased;
-  @apply flex flex-col;
-  @apply bg-stone-100 dark:bg-stone-900;
-  @apply text-black/50 dark:text-white/75;
-}
-
-header {
-  @apply fixed top-0 left-0 right-0 z-50 py-5;
-  @apply bg-stone-100/75 dark:bg-stone-900/25;
-  @apply backdrop-blur-sm saturate-200;
-}
-
-main {
-  @apply flex-1 py-32;
-}
-
-footer {
-  @apply py-5 text-sm;
-}
-
-article {
-  @apply max-w-full prose dark:prose-invert prose-img:mx-auto prose-img:my-auto;
-  @apply prose-headings:font-semibold prose-p:font-serif;
-  @apply prose-headings:text-black prose-headings:dark:text-white;
-}
-
-@layer utilities {
-  article a {
-    @apply font-sans text-current underline underline-offset-2;
-    @apply decoration-black/15 dark:decoration-white/30;
-    @apply transition-colors duration-300 ease-in-out;
+@layer base {
+  html {
+    color-scheme: light;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
   }
-  article a:hover {
-    @apply text-black dark:text-white;
-    @apply decoration-black/25 dark:decoration-white/50;
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply flex min-h-dvh flex-col font-sans antialiased;
+    @apply bg-zinc-50 text-zinc-700;
+    @apply dark:bg-[#18181B] dark:text-zinc-300;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent-600 dark:outline-accent-400;
+  }
+
+  ::selection {
+    @apply bg-accent-400/30;
   }
 }
 
-.animate {
-  @apply opacity-0 translate-y-3;
-  @apply transition-all duration-700 ease-out;
+@layer components {
+  .link {
+    @apply underline decoration-zinc-400 underline-offset-4 transition-colors hover:text-zinc-950 hover:decoration-accent-600;
+    @apply dark:decoration-zinc-600 dark:hover:text-white dark:hover:decoration-accent-400;
+  }
+
+  .card {
+    @apply rounded-lg border border-zinc-200 bg-white;
+    @apply dark:border-zinc-800 dark:bg-zinc-900;
+  }
+
+  .card-hover {
+    @apply transition-colors hover:border-zinc-400 dark:hover:border-zinc-600;
+  }
+
+  .tag {
+    @apply inline-flex items-center rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-xs text-zinc-600;
+    @apply dark:border-zinc-700/70 dark:bg-zinc-800/60 dark:text-zinc-400;
+  }
+
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-md border px-3.5 py-2 text-sm font-medium transition-colors;
+    @apply border-zinc-300 text-zinc-800 hover:border-zinc-500 hover:bg-zinc-100;
+    @apply dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-800;
+  }
+
+  .btn-primary {
+    @apply border-accent-600 bg-accent-600 text-white hover:border-accent-700 hover:bg-accent-700;
+    @apply dark:border-accent-400 dark:bg-accent-400 dark:text-zinc-950 dark:hover:border-accent-300 dark:hover:bg-accent-300;
+  }
+
+  .section-title {
+    @apply font-mono text-xs font-medium tracking-widest text-zinc-500 uppercase;
+  }
+
+  .todo {
+    @apply rounded border border-dashed border-accent-600/60 bg-accent-400/10 px-1.5 py-0.5 font-mono text-xs text-accent-700;
+    @apply dark:border-accent-400/50 dark:text-accent-300;
+  }
+
+  /* Long-form content: posts and case studies. */
+  .prose-content {
+    @apply prose prose-zinc max-w-[70ch] dark:prose-invert;
+    @apply prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:tracking-tight;
+    @apply prose-a:decoration-zinc-400 prose-a:underline-offset-4 hover:prose-a:decoration-accent-600 dark:prose-a:decoration-zinc-600 dark:hover:prose-a:decoration-accent-400;
+    @apply prose-code:font-mono prose-code:before:content-none prose-code:after:content-none;
+    @apply prose-pre:border prose-pre:border-zinc-200 dark:prose-pre:border-zinc-800;
+    @apply prose-img:rounded-lg prose-img:border prose-img:border-zinc-200 dark:prose-img:border-zinc-800;
+  }
+
+  .prose-content :where(:not(pre) > code) {
+    @apply rounded bg-zinc-200/70 px-1 py-0.5 text-[0.85em] font-normal dark:bg-zinc-800;
+  }
+
+  /* Tables carry results — keep them readable and scrollable on phones. */
+  .prose-content table {
+    @apply block w-full overflow-x-auto text-sm;
+  }
+
+  .prose-content th {
+    @apply border-b border-zinc-300 bg-zinc-100 px-3 py-2 text-left dark:border-zinc-700 dark:bg-zinc-800/60;
+  }
+
+  .prose-content td {
+    @apply border-b border-zinc-200 px-3 py-2 align-top dark:border-zinc-800;
+  }
+
+  .prose-content td:has(> code:only-child),
+  .prose-content .metric {
+    @apply font-mono;
+  }
+
+  .prose-content blockquote {
+    @apply border-l-accent-500 font-normal not-italic;
+  }
+
+  .prose-content blockquote p::before,
+  .prose-content blockquote p::after {
+    content: none;
+  }
+
+  /* Mermaid placeholder before client render. */
+  .prose-content pre:has(> code.language-mermaid) {
+    @apply bg-transparent text-transparent;
+  }
+
+  .prose-content .mermaid-diagram {
+    @apply my-6 flex justify-center overflow-x-auto rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900;
+  }
 }
 
-.animate.show {
-  @apply opacity-100 translate-y-0;
+/* Shiki dual themes (defaultColor: false) */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
 }
 
-html #back-to-top {
-  @apply opacity-0 pointer-events-none;
+html.dark .astro-code,
+html.dark .astro-code span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
 }
 
-html.scrolled #back-to-top {
-  @apply opacity-100 pointer-events-auto;
+.astro-code {
+  @apply rounded-lg text-[0.85rem] leading-relaxed;
 }

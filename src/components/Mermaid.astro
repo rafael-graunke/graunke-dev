@@ -1,0 +1,38 @@
+---
+// Renders ```mermaid code blocks client-side. Mermaid is only downloaded on
+// pages that actually contain a diagram.
+---
+
+<script>
+  const blocks = () =>
+    Array.from(document.querySelectorAll<HTMLElement>('pre:has(> code.language-mermaid), .mermaid-diagram'));
+
+  async function render() {
+    const nodes = blocks();
+    if (nodes.length === 0) return;
+
+    const { default: mermaid } = await import("mermaid");
+    const dark = document.documentElement.classList.contains("dark");
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: dark ? "dark" : "neutral",
+      fontFamily: "Inter Variable, ui-sans-serif, sans-serif",
+      securityLevel: "strict",
+    });
+
+    for (const [i, node] of nodes.entries()) {
+      const source = node.dataset.source ?? node.textContent ?? "";
+      const { svg } = await mermaid.render(`mermaid-${i}-${Date.now()}`, source);
+      const figure = document.createElement("div");
+      figure.className = "mermaid-diagram not-prose";
+      figure.dataset.source = source;
+      figure.setAttribute("role", "img");
+      figure.setAttribute("aria-label", "Diagram");
+      figure.innerHTML = svg;
+      node.replaceWith(figure);
+    }
+  }
+
+  render();
+  document.addEventListener("themechange", render);
+</script>

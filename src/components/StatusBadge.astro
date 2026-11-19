@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { STATUS_LABEL, cn } from "@lib/utils";
+
+type Props = { status: CollectionEntry<"projects">["data"]["status"] };
+const { status } = Astro.props;
+
+const styles = {
+  live: "border-emerald-600/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  "in-progress": "border-blue-600/30 bg-blue-500/10 text-blue-700 dark:border-blue-400/30 dark:text-blue-400",
+  done: "border-emerald-600/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  archived: "border-zinc-400/40 bg-zinc-500/10 text-zinc-600 dark:text-zinc-400",
+};
+---
+
+<span class={cn("inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[0.7rem] font-medium", styles[status])}>
+  {
+    status === "done" ? (
+      <svg class="size-2.5" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2 6.5 4.8 9 10 3" />
+      </svg>
+    ) : (
+      <span class="size-1.5 rounded-full bg-current" aria-hidden="true"></span>
+    )
+  }
+  {STATUS_LABEL[status]}
+</span>

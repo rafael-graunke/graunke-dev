@@ -1,0 +1,141 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import { ABOUT, SITE, SOCIALS } from "@consts";
+
+const github = SOCIALS.find((s) => s.NAME === "GitHub")!;
+const linkedin = SOCIALS.find((s) => s.NAME === "LinkedIn")!;
+
+const experience = [
+  { period: "Jul 2026 – present", company: "Coforge", role: "Software Engineer" },
+  { period: "Apr 2024 – Jun 2026", company: "TestBox (US startup, remote)", role: "Mid-Level Software Engineer" },
+  { period: "Feb 2024 – Mar 2024", company: "BRAVO Inteligência Empresarial", role: "Data Engineer (short engagement)" },
+  { period: "Feb 2023 – Feb 2024", company: "Beemôn Tecnologia", role: "Software Developer" },
+  { period: "Aug 2020 – Aug 2022", company: "Prothree Technologies", role: "IT Infrastructure Specialist" },
+];
+
+const skills: { area: string; items: string[] }[] = [
+  { area: "Languages", items: ["Python", "TypeScript/JavaScript", "SQL", "Rust and C/C++ (side and academic projects)"] },
+  { area: "Backend", items: ["Django", "Django REST Framework", "Celery", "REST APIs", "GraphQL", "PostgreSQL"] },
+  { area: "Frontend", items: ["React", "Redux"] },
+  { area: "Cloud & Infra", items: ["AWS (VPC design, cost optimization)", "GCP Cloud Run", "Docker", "Infrastructure as Code", "CI/CD"] },
+  { area: "Ops background", items: ["Windows Server", "Active Directory", "Hyper-V", "Networking (DNS, DHCP, routing, firewalls)", "Zabbix"] },
+  { area: "Testing & automation", items: ["Pytest", "Selenium", "CI optimization"] },
+  { area: "Media", items: ["WebCodecs", "WebGL"] },
+];
+
+const education = [
+  { period: "2023 – 2027 (expected)", what: "B.Sc. Computer Science", where: "UCS — Universidade de Caxias do Sul" },
+  { period: "2019 – 2022", what: "Technical degree in IT", where: "IFRS" },
+  { period: "2022", what: "AWS Cloud Computing specialization", where: "Cloud Treinamentos" },
+];
+---
+
+<PageLayout title={ABOUT.TITLE} description={ABOUT.DESCRIPTION} image="/og/about.png">
+  <Container class="space-y-16">
+    <header class="space-y-3">
+      <h1 class="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-white">About</h1>
+      <p class="font-mono text-sm text-zinc-500">{SITE.TITLE} · {SITE.LOCATION} · open to remote, international roles</p>
+    </header>
+
+    <section aria-labelledby="story-title" class="space-y-4">
+      <h2 id="story-title" class="section-title">Infrastructure → backend and full-stack</h2>
+      <div class="prose-content">
+        <p>
+          I started in IT infrastructure, running Windows Server, Active Directory, Hyper-V, networking and
+          Zabbix monitoring for multiple client organizations.
+        </p>
+        <p>
+          I moved into software on a fleet-management platform built with Django/DRF and React, where I cut
+          CI test time by over 75%. After that came a short data-engineering engagement: a serverless ETL
+          pipeline on GCP Cloud Run instead of a planned Airflow setup.
+        </p>
+        <p>
+          I then spent over two years at TestBox, a US startup working on demo automation. I built Python backend
+          services, third-party integrations (APIs and Selenium) and data ingestion pipelines. I also worked on
+          infrastructure as code on AWS and CI/CD, and supported production incidents.
+        </p>
+        <p>
+          Today I'm a Software Engineer at Coforge, working with Python, Django and React.
+        </p>
+        <p>
+          I'm finishing a B.Sc. in Computer Science at UCS (expected 2027). Outside work I build tools I
+          actually want to use, like <a href="/projects/spellsplice">Spellsplice</a>, and explore low-level
+          programming: Rust, emulators and assemblers.
+        </p>
+        <p>
+          Currently studying how to build applications on top of LLMs (retrieval, evaluation).
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3 pt-2">
+        <a href={SITE.CV} class="btn btn-primary">Download CV</a>
+        <a href={`mailto:${SITE.EMAIL}`} class="btn">{SITE.EMAIL}</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="experience-title" class="space-y-4">
+      <h2 id="experience-title" class="section-title">Experience</h2>
+      <ol class="divide-y divide-zinc-200 dark:divide-zinc-800">
+        {
+          experience.map(({ period, company, role }) => (
+            <li class="grid gap-1 py-3 sm:grid-cols-[11rem_1fr] sm:gap-4">
+              <span class="font-mono text-xs text-zinc-500 sm:pt-1">{period}</span>
+              <div>
+                <p class="font-medium text-zinc-900 dark:text-zinc-100">{company}</p>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">{role}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section aria-labelledby="skills-title" class="space-y-4">
+      <h2 id="skills-title" class="section-title">Skills</h2>
+      <dl class="grid gap-5">
+        {
+          skills.map(({ area, items }) => (
+            <div class="grid gap-2 sm:grid-cols-[11rem_1fr] sm:gap-4">
+              <dt class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                {area}
+              </dt>
+              <dd>
+                <ul class="flex flex-wrap gap-1.5">
+                  {items.map((item) => (
+                    <li class="tag">{item}</li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section aria-labelledby="education-title" class="space-y-4">
+      <h2 id="education-title" class="section-title">Education</h2>
+      <ul class="divide-y divide-zinc-200 dark:divide-zinc-800">
+        {
+          education.map(({ period, what, where }) => (
+            <li class="grid gap-1 py-3 sm:grid-cols-[11rem_1fr] sm:gap-4">
+              <span class="font-mono text-xs text-zinc-500 sm:pt-1">{period}</span>
+              <div>
+                <p class="font-medium text-zinc-900 dark:text-zinc-100">{what}</p>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">{where}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section aria-labelledby="contact-title" class="space-y-4">
+      <h2 id="contact-title" class="section-title">Contact</h2>
+      <p class="text-zinc-600 dark:text-zinc-400">
+        The fastest way to reach me is email: <a href={`mailto:${SITE.EMAIL}`} class="link">{SITE.EMAIL}</a>.
+        I'm also on <a href={github.HREF} class="link" rel="me noopener">GitHub</a> and
+        <a href={linkedin.HREF} class="link" rel="me noopener">LinkedIn</a>.
+      </p>
+    </section>
+  </Container>
+</PageLayout>

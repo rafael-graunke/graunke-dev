@@ -1,0 +1,62 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import Mermaid from "@components/Mermaid.astro";
+import { formatDate, getPosts, getProjects, projectSlug, readingTime } from "@lib/utils";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+type Props = { post: CollectionEntry<"posts"> };
+const { post } = Astro.props;
+const { title, date, summary, tags, related_project } = post.data;
+const { Content } = await render(post);
+const project = related_project
+  ? (await getProjects()).find((p) => projectSlug(p) === related_project)
+  : undefined;
+---
+
+<PageLayout title={title} description={summary} image={`/og/writing/${post.id}.png`} type="article">
+  <Container class="space-y-10">
+    <a href="/writing" class="link inline-block text-sm text-zinc-500">← All writing</a>
+
+    <header class="space-y-3">
+      <p class="flex flex-wrap gap-x-2 font-mono text-xs text-zinc-500">
+        <time datetime={date.toISOString()}>{formatDate(date)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{readingTime(post.body)}</span>
+      </p>
+      <h1 class="max-w-[70ch] text-3xl font-semibold tracking-tight text-balance text-zinc-950 dark:text-white">{title}</h1>
+      <p class="max-w-[70ch] text-lg text-zinc-600 dark:text-zinc-400">{summary}</p>
+      {
+        tags.length > 0 && (
+          <ul class="flex flex-wrap gap-1.5" aria-label="Tags">
+            {tags.map((t) => (
+              <li class="tag">{t}</li>
+            ))}
+          </ul>
+        )
+      }
+    </header>
+
+    <article class="prose-content">
+      <Content />
+    </article>
+
+    {
+      project && (
+        <aside class="card max-w-[70ch] p-5">
+          <p class="section-title">Related project</p>
+          <a href={`/projects/${projectSlug(project)}`} class="link mt-2 inline-block font-medium text-zinc-900 dark:text-zinc-100">
+            {project.data.title}
+          </a>
+          <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{project.data.summary}</p>
+        </aside>
+      )
+    }
+  </Container>
+  <Mermaid />
+</PageLayout>

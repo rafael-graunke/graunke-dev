@@ -7,19 +7,22 @@ import { SITE } from "@consts";
 type Props = {
   title: string;
   description: string;
+  image?: string;
+  type?: "website" | "article";
 };
 
-const { title, description } = Astro.props;
+const { title, description, image, type } = Astro.props;
+const fullTitle = title === SITE.NAME ? `${SITE.NAME} — ${SITE.TITLE}` : `${title} · ${SITE.NAME}`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
-    <Head title={`${title} | ${SITE.NAME}`} description={description} />
+    <Head title={fullTitle} description={description} image={image} type={type} />
   </head>
   <body>
     <Header />
-    <main>
+    <main id="main" class="flex-1 pt-12 sm:pt-16">
       <slot />
     </main>
     <Footer />

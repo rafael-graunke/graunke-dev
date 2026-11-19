@@ -1,34 +1,61 @@
 ---
 import Container from "@components/Container.astro";
-import Link from "@components/Link.astro";
 import { SITE } from "@consts";
+import { cleanPath } from "@lib/utils";
+
+const NAV = [
+  { href: "/projects", label: "Projects" },
+  { href: "/writing", label: "Writing" },
+  { href: "/about", label: "About" },
+];
+
+const path = cleanPath(Astro.url.pathname);
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 ---
 
-<header>
-  <Container>
-    <div class="flex flex-wrap gap-y-2 justify-between">
-      <Link href="/" underline={false}>
-        <div class="font-semibold">
-          {SITE.NAME}
-        </div>
-      </Link>
-      <nav class="flex gap-1">
-        <Link href="/blog">
-          blog
-        </Link>
-        <span>
-          {`/`}
-        </span>
-        <Link href="/work">
-          work
-        </Link>
-        <span>
-          {`/`}
-        </span>
-        <Link href="/projects">
-          projects
-        </Link>
-      </nav>
-    </div>
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 btn bg-zinc-50 dark:bg-zinc-900">
+  Skip to content
+</a>
+<header class="sticky top-0 z-40 border-b border-zinc-200/80 bg-zinc-50/85 backdrop-blur dark:border-zinc-800/80 dark:bg-[#18181B]/85">
+  <Container class="flex h-14 items-center justify-between gap-4">
+    <a href="/" class="font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100">
+      graunke<span class="text-accent-600 dark:text-accent-400">.dev</span>
+      <span class="sr-only">— {SITE.NAME}, home</span>
+    </a>
+    <nav aria-label="Main" class="flex items-center gap-1 text-sm">
+      {
+        NAV.map(({ href, label }) => (
+          <a
+            href={href}
+            aria-current={isActive(href) ? "page" : undefined}
+            class="rounded px-2 py-1 text-zinc-600 transition-colors hover:text-zinc-950 aria-[current=page]:text-zinc-950 dark:text-zinc-400 dark:hover:text-white dark:aria-[current=page]:text-white"
+          >
+            {label}
+          </a>
+        ))
+      }
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-label="Toggle light/dark theme"
+        class="ml-1 grid size-8 place-items-center rounded text-zinc-500 transition-colors hover:text-zinc-950 dark:hover:text-white"
+      >
+        <svg class="hidden size-4 dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+        <svg class="size-4 dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+        </svg>
+      </button>
+    </nav>
   </Container>
 </header>
+
+<script>
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    const dark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("theme", dark ? "dark" : "light");
+    document.dispatchEvent(new CustomEvent("themechange"));
+  });
+</script>

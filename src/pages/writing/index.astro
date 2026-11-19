@@ -1,0 +1,55 @@
+---
+import PageLayout from "@layouts/PageLayout.astro";
+import Container from "@components/Container.astro";
+import PostItem from "@components/PostItem.astro";
+import { BUILD_LOG_TAG, WRITING } from "@consts";
+import { getPosts } from "@lib/utils";
+
+const all = await getPosts();
+const articles = all.filter((p) => !p.data.tags.includes(BUILD_LOG_TAG));
+const buildLogs = all.filter((p) => p.data.tags.includes(BUILD_LOG_TAG));
+---
+
+<PageLayout title={WRITING.TITLE} description={WRITING.DESCRIPTION} image="/og/writing.png">
+  <Container class="space-y-12">
+    <header class="space-y-3">
+      <h1 class="text-3xl font-semibold tracking-tight text-zinc-950 dark:text-white">Writing</h1>
+      <p class="max-w-2xl text-zinc-600 dark:text-zinc-400">
+        Notes and write-ups.
+        <a href="/rss.xml" class="link">RSS feed</a>.
+      </p>
+    </header>
+
+    <section aria-labelledby="articles-title" class="space-y-2">
+      <h2 id="articles-title" class="section-title">Articles</h2>
+      {
+        articles.length > 0 ? (
+          <ul class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {articles.map((post) => (
+              <li>
+                <PostItem post={post} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="py-4 text-sm text-zinc-500">Posts coming soon.</p>
+        )
+      }
+    </section>
+
+    {
+      buildLogs.length > 0 && (
+        <section aria-labelledby="buildlog-title" class="space-y-2">
+          <h2 id="buildlog-title" class="section-title">Build log</h2>
+          <ul class="divide-y divide-zinc-200 dark:divide-zinc-800">
+            {buildLogs.map((post) => (
+              <li>
+                <PostItem post={post} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </Container>
+</PageLayout>
